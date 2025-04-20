@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PFosterOrderMapper">
+    
+    <resultMap type="PFosterOrder" id="PFosterOrderResult">
+        <result property="fosterId"    column="foster_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="petName"    column="pet_name"    />
+        <result property="fosterTime"    column="foster_time"    />
+        <result property="fosterDays"    column="foster_days"    />
+        <result property="fosterStatus"    column="foster_status"    />
+        <result property="roomNumber"    column="room_number"    />
+    </resultMap>
+
+    <sql id="selectPFosterOrderVo">
+        select foster_id, user_name, pet_name, foster_time, foster_days, foster_status, room_number from p_foster_order
+    </sql>
+
+    <select id="selectPFosterOrderList" parameterType="PFosterOrder" resultMap="PFosterOrderResult">
+        <include refid="selectPFosterOrderVo"/>
+        <where>  
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="petName != null  and petName != ''"> and pet_name like concat('%', #{petName}, '%')</if>
+            <if test="fosterTime != null "> and foster_time = #{fosterTime}</if>
+            <if test="fosterDays != null "> and foster_days = #{fosterDays}</if>
+            <if test="fosterStatus != null  and fosterStatus != ''"> and foster_status = #{fosterStatus}</if>
+            <if test="roomNumber != null  and roomNumber != ''"> and room_number = #{roomNumber}</if>
+        </where>
+    </select>
+    
+    <select id="selectPFosterOrderByFosterId" parameterType="Long" resultMap="PFosterOrderResult">
+        <include refid="selectPFosterOrderVo"/>
+        where foster_id = #{fosterId}
+    </select>
+
+    <insert id="insertPFosterOrder" parameterType="PFosterOrder" useGeneratedKeys="true" keyProperty="fosterId">
+        insert into p_foster_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null and userName != ''">user_name,</if>
+            <if test="petName != null and petName != ''">pet_name,</if>
+            <if test="fosterTime != null">foster_time,</if>
+            <if test="fosterDays != null">foster_days,</if>
+            <if test="fosterStatus != null and fosterStatus != ''">foster_status,</if>
+            <if test="roomNumber != null and roomNumber != ''">room_number,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null and userName != ''">#{userName},</if>
+            <if test="petName != null and petName != ''">#{petName},</if>
+            <if test="fosterTime != null">#{fosterTime},</if>
+            <if test="fosterDays != null">#{fosterDays},</if>
+            <if test="fosterStatus != null and fosterStatus != ''">#{fosterStatus},</if>
+            <if test="roomNumber != null and roomNumber != ''">#{roomNumber},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePFosterOrder" parameterType="PFosterOrder">
+        update p_foster_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="petName != null and petName != ''">pet_name = #{petName},</if>
+            <if test="fosterTime != null">foster_time = #{fosterTime},</if>
+            <if test="fosterDays != null">foster_days = #{fosterDays},</if>
+            <if test="fosterStatus != null and fosterStatus != ''">foster_status = #{fosterStatus},</if>
+            <if test="roomNumber != null and roomNumber != ''">room_number = #{roomNumber},</if>
+        </trim>
+        where foster_id = #{fosterId}
+    </update>
+
+    <delete id="deletePFosterOrderByFosterId" parameterType="Long">
+        delete from p_foster_order where foster_id = #{fosterId}
+    </delete>
+
+    <delete id="deletePFosterOrderByFosterIds" parameterType="String">
+        delete from p_foster_order where foster_id in 
+        <foreach item="fosterId" collection="array" open="(" separator="," close=")">
+            #{fosterId}
+        </foreach>
+    </delete>
+</mapper>
